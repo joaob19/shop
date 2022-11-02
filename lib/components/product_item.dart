@@ -14,6 +14,8 @@ class ProductItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final messenger = ScaffoldMessenger.of(context);
+
     return ListTile(
       leading: CircleAvatar(
         backgroundImage: NetworkImage(
@@ -37,7 +39,7 @@ class ProductItem extends StatelessWidget {
             ),
             IconButton(
               onPressed: () {
-                showDialog<bool>(
+                showDialog<bool?>(
                   context: context,
                   barrierDismissible: false,
                   builder: (context) {
@@ -50,20 +52,28 @@ class ProductItem extends StatelessWidget {
                           child: const Text('Não'),
                         ),
                         TextButton(
-                          onPressed: () {
-                            Provider.of<ProductList>(
-                              context,
-                              listen: false,
-                            ).removeProduct(product);
-
-                            Navigator.of(context).pop();
-                          },
+                          onPressed: () => Navigator.of(context).pop(true),
                           child: const Text('Sim'),
                         ),
                       ],
                     );
                   },
-                );
+                ).then((value) async {
+                  if (value ?? false) {
+                    try {
+                      await Provider.of<ProductList>(
+                        context,
+                        listen: false,
+                      ).removeProduct(product);
+                    } catch (error) {
+                      messenger.showSnackBar(
+                        SnackBar(
+                          content: Text(error.toString()),
+                        ),
+                      );
+                    }
+                  }
+                });
               },
               color: Theme.of(context).errorColor,
               icon: const Icon(Icons.delete),

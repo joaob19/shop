@@ -12,4 +12,15 @@ class Order {
     required this.products,
     required this.date,
   });
+
+  static Order fromJson(String id, Map<String,dynamic> json) {
+    return Order(
+      id: id,
+      total: json['total'] as double,
+      products: (json['products'] as List<dynamic>).map((cartItemData) {
+        return CartItem.fromJson(cartItemData);
+      }).toList(),
+      date: DateTime.parse(json['date'].toString()),
+    );
+  }
 }
