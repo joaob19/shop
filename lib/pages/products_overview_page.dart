@@ -34,29 +34,33 @@ class _ProductsOverviewPageState extends State<ProductsOverviewPage> {
         listen: false,
       ).loadProducts();
     } catch (error) {
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('Ocorreu um erro!'),
-            content:
-                const Text('Ocorreu um erro ao tentar carregar os produtos.'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Ok'),
-              ),
-            ],
-          );
-        },
-      );
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('Ocorreu um erro!'),
+              content:
+                  const Text('Ocorreu um erro ao tentar carregar os produtos.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Ok'),
+                ),
+              ],
+            );
+          },
+        );
+      }
     } finally {
       _toggleLoaderIndicator();
     }
   }
 
   void _toggleLoaderIndicator() {
-    setState(() => _isLoading = !_isLoading);
+    if (mounted) {
+      setState(() => _isLoading = !_isLoading);
+    }
   }
 
   @override

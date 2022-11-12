@@ -29,18 +29,17 @@ class Product with ChangeNotifier {
       'description': description,
       'price': price,
       'imageUrl': imageUrl,
-      'isFavorite': isFavorite,
     };
   }
 
-  static Product fromJson(String id, Map<String, dynamic> json) {
+  static Product fromJson(String id, Map<String, dynamic> json, bool isFavorite) {
     return Product(
       id: id,
       name: json['name'] as String,
       description: json['description'] as String,
       price: json['price'] as double,
       imageUrl: json['imageUrl'] as String,
-      isFavorite: json['isFavorite'] as bool,
+      isFavorite: isFavorite,
     );
   }
 
@@ -49,15 +48,15 @@ class Product with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> toggleFavorite() async {
+  Future<void> toggleFavorite(String token, String userId) async {
     try {
       _toggleFavorite();
 
-      final response = await http.patch(
+      final response = await http.put(
         Uri.parse(
-          '${Constants.productBaseUrl}/$id.json',
+          '${Constants.userFavorites}/$userId/$id.json?auth=$token',
         ),
-        body: jsonEncode({'isFavorite': isFavorite}),
+        body: jsonEncode(isFavorite),
       );
 
       if (response.statusCode >= 400) {
